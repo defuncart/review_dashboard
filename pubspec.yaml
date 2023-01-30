@@ -1,0 +1,21 @@
+name: reviews_dashboard
+description: A realtime dashboard for user reviews.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 0.0.1+1
+
+environment:
+  sdk: '>=2.19.0 <3.0.0'
+  flutter: '>=3.7.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
