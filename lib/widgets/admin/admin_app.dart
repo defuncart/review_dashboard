@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 // ignore: depend_on_referenced_packages
 import 'package:latlong2/latlong.dart';
 import 'package:reviews_dashboard/models/review.dart';
@@ -16,9 +17,6 @@ class AdminApp extends ConsumerWidget {
 
     return AuthWrapper(
       onBuildDashboard: (context) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Welcome to Flutter'),
-        ),
         body: reviewsStream.map(
           loading: (_) => const Center(
             child: CircularProgressIndicator(),
@@ -71,13 +69,13 @@ class AdminDashboard extends StatelessWidget {
           markers: reviews
               .map(
                 (review) => Marker(
-                  width: 80,
-                  height: 80,
+                  width: 90 + 24,
+                  height: 60 + 24,
                   point: LatLng(
                     review.location.latitude,
                     review.location.longitude,
                   ),
-                  builder: (context) => const _Marker(),
+                  builder: (context) => _Marker(review: review),
                 ),
               )
               .toList(),
@@ -88,47 +86,78 @@ class AdminDashboard extends StatelessWidget {
 }
 
 class _Marker extends StatefulWidget {
-  const _Marker();
+  const _Marker({
+    required this.review,
+  });
+
+  final Review review;
 
   @override
   State<_Marker> createState() => _MarkerState();
 }
 
 class _MarkerState extends State<_Marker> {
+  var _isHovering = false;
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (details) {
-        late OverlayEntry entry;
-
-        entry = OverlayEntry(
-          builder: (context) => Positioned(
-            left: details.globalPosition.dx,
-            top: details.globalPosition.dy - 16 - 64,
-            child: Material(
-              color: Colors.transparent,
-              child: GestureDetector(
-                onTap: () => entry.remove(),
-                child: Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: Colors.white,
-                  ),
-                  child: const Center(
-                    child: Text('hello'),
-                  ),
+    return MouseRegion(
+        onEnter: (_) => setState(() => _isHovering = true),
+        onExit: (_) => setState(() => _isHovering = false),
+        child: Stack(
+          children: [
+            if (_isHovering)
+              Positioned(
+                left: 24,
+                child: _Overlay(
+                  review: widget.review,
                 ),
+              ),
+            Icon(
+              Icons.location_on,
+              size: 24,
+              color: _isHovering ? Theme.of(context).primaryColorDark : Theme.of(context).primaryColor,
+            ),
+          ],
+        ));
+  }
+}
+
+class _Overlay extends StatelessWidget {
+  const _Overlay({
+    required this.review,
+  });
+
+  final Review review;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 100,
+      height: 40,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        color: Colors.white,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: List.generate(
+              review.rating,
+              (_) => Icon(
+                Icons.star,
+                color: Theme.of(context).primaryColor,
+                size: 16,
               ),
             ),
           ),
-        );
-        Overlay.of(context).insert(entry);
-      },
-      child: Icon(
-        Icons.location_on,
-        color: Theme.of(context).primaryColor,
+          Text(
+            DateFormat.MMMEd().format(review.createdAt),
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
+        ],
       ),
     );
   }

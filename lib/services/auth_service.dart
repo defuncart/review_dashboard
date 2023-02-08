@@ -22,3 +22,20 @@ class FirebaseAuthService implements IAuthService {
   @override
   Future<void> logout() => _firebaseAuth.signOut();
 }
+
+class NativeWindowsLinuxAuthService implements IAuthService {
+  @override
+  Future<void> login() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> logout() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<bool> onAuthenticatedChanged() {
+    throw UnimplementedError();
+  }
+}

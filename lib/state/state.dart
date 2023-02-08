@@ -25,10 +25,15 @@ final appTypeProvider = Provider((_) {
   return AppType.client;
 });
 
+bool get _isNativeWindowsOrLinux =>
+    !kIsWeb && [TargetPlatform.linux, TargetPlatform.windows].contains(defaultTargetPlatform);
+
 final authProvider = Provider<IAuthService>(
-  (_) => FirebaseAuthService(
-    firebaseAuth: FirebaseAuth.instance,
-  ),
+  (_) => _isNativeWindowsOrLinux
+      ? NativeWindowsLinuxAuthService()
+      : FirebaseAuthService(
+          firebaseAuth: FirebaseAuth.instance,
+        ),
 );
 
 final isUserAuthenticatedProvider = StreamProvider(
@@ -36,9 +41,11 @@ final isUserAuthenticatedProvider = StreamProvider(
 );
 
 final dbProvider = Provider<IDbService>(
-  (_) => FirestoreDbService(
-    firestore: FirebaseFirestore.instance,
-  ),
+  (_) => _isNativeWindowsOrLinux
+      ? NativeWindowsLinuxDbService()
+      : FirestoreDbService(
+          firestore: FirebaseFirestore.instance,
+        ),
 );
 
 final reviewsStreamProvider = StreamProvider(

@@ -25,3 +25,15 @@ class FirestoreDbService implements IDbService {
   @override
   Future<void> addReview(Review review) => _firestore.collection('reviews').add(review.toJson());
 }
+
+class NativeWindowsLinuxDbService implements IDbService {
+  @override
+  Future<void> addReview(Review review) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<List<Review>> reviewsStream() {
+    throw UnimplementedError();
+  }
+}
